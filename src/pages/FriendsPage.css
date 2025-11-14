@@ -1,0 +1,163 @@
+/* ====== CryptoComm Friends Page ====== */
+/*
+body {
+  background: radial-gradient(circle at top right, #0a0a0a, #151515, #000);
+  color: #fff;
+  font-family: "Poppins", sans-serif;
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  overflow-x: hidden;
+}
+
+.friends-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 80px;
+}
+
+
+.friends-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: rgba(15, 15, 15, 0.95);
+  border-bottom: 1px solid rgba(0, 255, 255, 0.15);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 60px;
+  backdrop-filter: blur(10px);
+  z-index: 10;
+}
+
+.friends-header h1 {
+  font-size: 1.8rem;
+  background: linear-gradient(90deg, #00eaff, #6effa5);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.friends-header nav button {
+  background: transparent;
+  border: none;
+  color: #aaa;
+  font-size: 1rem;
+  margin-left: 25px;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.friends-header nav button:hover {
+  color: #00eaff;
+}
+
+
+.friends-card {
+  background: rgba(20, 20, 20, 0.9);
+  border: 1px solid rgba(0, 255, 255, 0.2);
+  border-radius: 20px;
+  padding: 40px 60px;
+  width: 700px;
+  box-shadow: 0 0 25px rgba(0, 255, 255, 0.25);
+  text-align: center;
+}
+
+.section-title {
+  color: #6effa5;
+  margin-bottom: 30px;
+}
+
+.friend-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 30px 0;
+}
+
+.friend-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(0, 255, 255, 0.05);
+  border: 1px solid rgba(0, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 15px 20px;
+  margin-bottom: 15px;
+  transition: background 0.3s ease;
+}
+
+.friend-item:hover {
+  background: rgba(0, 255, 255, 0.1);
+}
+
+.friend-name {
+  font-weight: 600;
+  font-size: 1.05rem;
+}
+
+.friend-address {
+  color: #bbb;
+  font-size: 0.85rem;
+  font-family: monospace;
+}
+
+.chat-btn {
+  background: linear-gradient(90deg, #00eaff, #6effa5);
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.3s ease;
+  color: #000;
+}
+
+.chat-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+}
+
+
+.add-friend {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+
+.add-friend input {
+  width: 70%;
+  background: #101010;
+  border: 1px solid #00eaff;
+  border-radius: 10px;
+  padding: 12px;
+  color: #fff;
+  font-size: 0.95rem;
+  outline: none;
+}
+
+.add-friend button {
+  background: linear-gradient(90deg, #00ffcc, #00eaff);
+  border: none;
+  border-radius: 10px;
+  padding: 12px 18px;
+  color: #000;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.3s ease;
+}
+
+.add-friend button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.4);
+}
+
+
+.footer {
+  margin-top: 40px;
+  font-size: 0.85rem;
+  color: #888;
+}
+*/

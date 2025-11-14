@@ -1,0 +1,484 @@
+
+/* ====== ChatPage.css — Light Theme with Orange Accent ======
+   - Replaces green gradient with orange.
+   - Restores safe scrolling and prevents overlap with input.
+   - Comments added for every NEW/UPDATED rule/class to ease debugging.
+*/
+
+/* Root palette (changed accent to orange) */
+:root{
+  --bg: #ffffff;
+  --panel: #f5f6f7;
+  --muted: #6b7280;
+  --accent-1: #ff8a00; /* NEW: primary orange */
+  --accent-2: #ffc857; /* NEW: secondary orange */
+  --border: #e6eef0;
+  --text: #0f1724;
+  --glass: rgba(255,255,255,0.7);
+}
+
+/* Page */
+body {
+  margin: 0;
+  font-family: "Poppins", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+
+}
+
+/* Layout */
+.chat-container {
+  display: flex;
+  height: 100vh;
+  gap: 12px;
+  padding: 12px;
+  box-sizing: border-box;
+}
+
+/* Sidebar (unchanged structure) */
+.chat-sidebar {
+  width: 300px;
+  background: linear-gradient(180deg, var(--panel), #eef2f4);
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.06);
+}
+
+.sidebar-header {
+  display:flex;
+  gap:10px;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom: 12px;
+  background: #f4f1ed;
+}
+.sidebar-header h2 {
+  margin: 0;
+  font-size: 1.15rem;
+  color: var(--text);
+}
+.sidebar-header button {
+  background: transparent;
+  border: 1px solid var(--accent-1);
+  color: var(--accent-1);
+  padding: 6px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+/* Search area */
+.sidebar-search {
+  margin-bottom: 14px;
+}
+.sidebar-search input {
+  width: 100%;
+  display: block;
+  box-sizing: border-box;
+  padding: 10px 14px 10px 40px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: linear-gradient(180deg, #ffffff, #fbfdff);
+  font-size: 0.95rem;
+  color: var(--text);
+  outline: none;
+  box-shadow: 0 2px 6px rgba(50,60,70,0.04);
+  transition: box-shadow 0.15s, border-color 0.15s, transform 0.06s;
+  background-image: url("data:image/svg+xml;utf8,<svg fill='%23ff8a00' height='18' viewBox='0 0 24 24' width='18' xmlns='http://www.w3.org/2000/svg'><path d='M15.5 14h-.79l-.28-.27A6.471 6.471 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zM11 15a4 4 0 110-8 4 4 0 010 8z'/></svg>");
+  background-repeat: no-repeat;
+  background-position: 12px center;
+}
+.sidebar-search input::placeholder {
+  color: var(--muted);
+}
+.sidebar-search input:focus {
+  border-color: var(--accent-1);
+  box-shadow: 0 6px 20px rgba(255, 138, 0, 0.08); /* NEW: orange focus */
+  transform: translateY(-1px);
+}
+
+/* Friends list */
+.friend-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  flex-grow: 1;
+  overflow-y: auto;
+}
+.friend-item {
+  padding: 12px 10px;
+  border-radius: 10px;
+  background: transparent;
+  margin-bottom: 10px;
+  cursor: pointer;
+  transition: background 0.18s, transform 0.08s;
+  border: 1px solid rgba(255, 136, 0, 0.729);
+}
+.friend-item:hover {
+  background: #ffffff;
+  transform: translateY(-2px);
+  border-color: var(--border);
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.04);
+}
+.friend-item.active {
+  background: #ffd9b8;
+  border: 1px solid rgb(255, 136, 0);
+}
+.friend-name {
+  font-weight: 600;
+  margin: 0 0 4px 0;
+  color: var(--text);
+}
+.friend-address {
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-family: monospace;
+}
+
+/* Main chat area */
+.chat-main {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: linear-gradient(180deg,#ffffff,#fbfdff);
+  box-shadow: 0 10px 30px rgba(15,23,42,0.04);
+}
+
+/* Header */
+.chat-header {
+  background: #f4f1ed;
+  padding: 18px 22px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.chat-header h3 {
+  margin: 0;
+  color: var(--text);
+}
+.chat-address {
+  color: var(--muted);
+  font-size: 0.85rem;
+  font-family: monospace;
+}
+
+.exit-btn {
+  background: transparent;
+  border: 1px solid var(--accent-1);
+  border-radius: 8px;
+  color: var(--accent-1);
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+/* Messages area */
+/* NOTE: NEW - ensure the messages area scrolls independently and has safe bottom space
+   to avoid the sticky input overlapping message content. */
+.chat-messages {
+  flex-grow: 1;
+  padding: 22px;
+  overflow-y: auto;           /* NEW: restore scroll behaviour */
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  /* NEW: extra bottom padding equals or exceeds input height so messages won't be hidden */
+  padding-bottom: 140px;      /* NEW: adjust if your .chat-input height changes */
+  background: repeating-linear-gradient(180deg, transparent, transparent 120px, rgba(0,0,0,0.01) 121px);
+}
+
+/* NEW: custom class for nicer scrollbar (non-overlapping) */
+.chat-messages::-webkit-scrollbar {
+  width: 10px;
+}
+.chat-messages::-webkit-scrollbar-track {
+  background: transparent;
+}
+.chat-messages::-webkit-scrollbar-thumb {
+  background: rgba(15,23,42,0.06);
+  border-radius: 10px;
+}
+
+/* message bubble rules (unchanged colours but using new accent variables) */
+.message {
+  max-width: 64%;
+  margin-bottom: 0;
+  padding: 12px 16px;
+  border-radius: 12px;
+  line-height: 1.4;
+  font-size: 0.95rem;
+  position: relative;
+  animation: fadeIn 0.18s ease;
+  box-shadow: 0 6px 18px rgba(15,23,42,0.03);
+}
+
+.message.sent {
+  align-self: flex-end;
+  background: linear-gradient(90deg, #ffe8d1, #ffd7b5);
+ /* shows orange now */
+  color: #042024;
+  border-bottom-right-radius: 6px;
+}
+.message.received {
+  align-self: flex-start;
+  background: #ffffff;
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-bottom-left-radius: 6px;
+}
+
+/* ✅ Encryption badge */
+.encryption-badge {
+  display: inline-block;
+  margin-left: 6px;
+  font-size: 12px;
+  opacity: 0.7;
+  vertical-align: middle;
+}
+
+/* ✅ Message footer with status */
+.message-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 4px;
+  font-size: 11px;
+  opacity: 0.7;
+}
+
+.message-status {
+  font-size: 12px;
+  color: var(--accent-1);
+  margin-left: 4px;
+}
+
+.message-time {
+  font-size: 0.75rem;
+  color: var(--muted);
+  margin-top: 6px;
+  display: block;
+  text-align: right;
+}
+
+/* animation */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Chat input area - sticky to bottom */
+/* NOTE: NEW - making chat-input sticky to ensure it always sits above chat-messages
+   and remains visible on scroll. */
+.chat-input {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 18px;
+  border-top: 1px solid var(--border);
+  background: linear-gradient(180deg,#ffffff,#fbfdff);
+  position: sticky;     /* NEW */
+  bottom: 0;            /* NEW */
+  z-index: 6;           /* NEW: ensure input floats above messages */
+}
+
+/* File label (attachment) — larger and tappable (kept from previous) */
+.file-label {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;            /* increased size */
+  height: 48px;           /* increased size */
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  cursor: pointer;
+  font-size: 1.35rem;
+  box-shadow: 0 6px 16px rgba(15,23,42,0.04);
+  background: #fff;
+  transition: transform 0.12s, box-shadow 0.12s;
+}
+.file-label:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 28px rgba(15,23,42,0.06);
+}
+
+/* hidden native file input is ok */
+#file-upload {
+  display: none;
+}
+
+/* Message input field */
+.chat-input input[type="text"] {
+  flex-grow: 1;
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 14px;
+  color: var(--text);
+  font-size: 0.98rem;
+  outline: none;
+  box-shadow: inset 0 2px 6px rgba(0,0,0,0.02);
+}
+.chat-input input[type="text"]::placeholder {
+  color: var(--muted);
+}
+
+/* NEW: separate send button class so it's easier to debug/style */
+.send-btn {
+  background: linear-gradient(90deg, var(--accent-1), var(--accent-2)); /* orange gradient */
+  border: none;
+  border-radius: 12px;
+  padding: 12px 16px;
+  color: #022; 
+  font-weight: 700;
+  cursor: pointer;
+  font-size: 1.1rem;
+  box-shadow: 0 8px 22px rgba(255,138,0,0.08); /* NEW: orange shadow */
+  transition: transform 0.12s, box-shadow 0.12s;
+}
+.send-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 14px 40px rgba(255,138,0,0.12);
+}
+
+/* File message link appearance */
+.file-message {
+  color: var(--accent-1);
+  text-decoration: none;
+  font-weight: 700;
+}
+.file-message:hover {
+  text-decoration: underline;
+}
+
+/* No chat placeholder */
+.no-chat {
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex:1;
+  color: var(--muted);
+  font-size:1.05rem;
+}
+
+/* Responsive tweaks */
+@media (max-width: 900px) {
+  .chat-sidebar { width: 100%; height: 180px; order: 2; }
+  .chat-main { order: 1; width: 100%; }
+  .chat-container { flex-direction: column; height: auto; padding: 8px; }
+}
+.file-bubble {
+  background: rgba(255, 255, 255, 0.07);
+  border-radius: 0.8rem;
+  padding: 0.6rem 0.8rem;
+  margin-top: 0.3rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(8px);
+  color: #fff;
+  max-width: 65%; /* reduced from 80% for smaller width */
+  font-size: 0.85rem;
+  line-height: 1.3;
+}
+
+.file-bubble h4 {
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 0.3rem;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.file-bubble strong {
+  color: #ff8800;
+  font-size: 0.85rem;
+}
+.file-bubble p {
+  margin: 0.2rem 0;
+  color: #000;
+}
+
+.file-actions {
+  display: flex;
+  gap: 0.4rem;
+  margin-top: 0.4rem;
+}
+
+.file-actions .primary-btn,
+.file-actions .secondary-btn {
+  padding: 0.25rem 0.6rem;
+  border-radius: 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.file-actions .primary-btn {
+  background: linear-gradient(90deg, var(--accent-1), var(--accent-2));
+  border: none;
+  color: white;
+}
+
+.file-actions .secondary-btn {
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.1);
+  color: #000;
+}
+
+.file-actions .primary-btn:hover,
+.file-actions .secondary-btn:hover {
+  transform: scale(1.05);
+  opacity: 0.9;
+}
+/* Circular gradient avatar */
+.profile-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ffa62e, #ff6f00);
+  color: #fff;
+  font-weight: 600;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  flex-shrink: 0;
+}
+
+.profile-avatar:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 10px rgba(255, 136, 0, 0.4);
+}
+
+/* Keep "Chats" centered visually even with avatar */
+.sidebar-header h2 {
+  flex-grow: 1;
+  text-align: center;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #000;
+  margin: 0;
+}
+
+/* Friends button */
+.friends-btn {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+  padding: 0.4rem 0.8rem;
+  border-radius: 0.6rem;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.friends-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+}

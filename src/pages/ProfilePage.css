@@ -1,0 +1,167 @@
+/* ====== CryptoComm Profile Page ====== */
+/*
+body {
+  margin: 0;
+  font-family: "Poppins", sans-serif;
+  background: radial-gradient(circle at top right, #0a0a0a, #151515, #000);
+  color: #fff;
+  height: 100vh;
+  overflow-x: hidden;
+}
+
+.profile-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+
+.profile-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: rgba(15, 15, 15, 0.95);
+  border-bottom: 1px solid rgba(0, 255, 255, 0.2);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 60px;
+  z-index: 10;
+  backdrop-filter: blur(10px);
+}
+
+.profile-header h1 {
+  font-size: 1.8rem;
+  background: linear-gradient(90deg, #00eaff, #6effa5);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: 1px;
+}
+
+.profile-header nav button {
+  background: transparent;
+  border: none;
+  color: #bbb;
+  font-size: 1rem;
+  margin-left: 25px;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.profile-header nav button:hover {
+  color: #00eaff;
+}
+
+
+.profile-main {
+  padding-top: 120px;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.profile-card {
+  background: rgba(20, 20, 20, 0.9);
+  border: 1px solid rgba(0, 255, 255, 0.2);
+  border-radius: 20px;
+  padding: 60px;
+  text-align: center;
+  width: 500px;
+  box-shadow: 0 0 30px rgba(0, 255, 255, 0.25);
+  transition: all 0.3s ease;
+}
+
+.profile-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 0 40px rgba(0, 255, 255, 0.4);
+}
+
+.highlight {
+  color: #6effa5;
+  font-weight: 600;
+}
+
+.tagline {
+  color: #bbb;
+  font-size: 0.95rem;
+  margin-bottom: 40px;
+}
+
+.wallet-section {
+  background: rgba(0, 255, 255, 0.05);
+  border: 1px solid rgba(0, 255, 255, 0.15);
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 40px;
+}
+
+.wallet-section h3 {
+  color: #00eaff;
+}
+
+.wallet-address {
+  font-family: monospace;
+  color: #fff;
+  margin-top: 10px;
+  font-size: 0.95rem;
+}
+
+
+.info-section {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 40px;
+}
+
+.info-box {
+  background: rgba(0, 255, 255, 0.08);
+  border: 1px solid rgba(0, 255, 255, 0.15);
+  border-radius: 12px;
+  padding: 20px;
+  width: 100px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.info-box:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
+}
+
+.info-box h4 {
+  color: #6effa5;
+  margin-bottom: 8px;
+  font-size: 0.9rem;
+}
+
+.info-box p {
+  color: #fff;
+  font-weight: 600;
+  margin: 0;
+}
+
+
+.logout-btn {
+  background: linear-gradient(90deg, #ff4f4f, #ff7373);
+  border: none;
+  border-radius: 10px;
+  padding: 12px 24px;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.3s ease;
+}
+
+.logout-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 15px rgba(255, 79, 79, 0.5);
+}
+
+
+.profile-footer {
+  margin-top: 60px;
+  padding: 20px;
+  color: #777;
+  font-size: 0.85rem;
+}
+*/
