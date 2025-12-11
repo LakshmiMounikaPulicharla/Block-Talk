@@ -1,13 +1,13 @@
 import React, { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { Web3Context } from "../context/Web3Context.jsx";
-import "./pageTheme.css";
 
 const ConnectPage = () => {
   const navigate = useNavigate();
   const { account, isConnected, connectWallet } = useContext(Web3Context);
 
   return (
+    <div className="page-background-wrapper bg-connect1">
     <section className="page-section">
       <header className="page-header">
         <h1>Connect Your Wallet</h1>
@@ -40,7 +40,7 @@ const ConnectPage = () => {
             <div className="connected-state">
               <p className="callout success">✅ Wallet Connected!</p>
               <p className="mono-text">
-                Address: {account.slice(0, 6)}...{account.slice(-4)}
+                Address: {account.slice(2, 6)}xXXXx{account.slice(-4)}
               </p>
               <button
                 className="primary-btn"
@@ -67,31 +67,49 @@ const ConnectPage = () => {
 
         <div className="glass-card secondary">
           <div className="card-heading">
-            <h2>Why Connect?</h2>
+            <h2 style={{ color: "white" }}>Why Connect?</h2>
           </div>
-          <ul className="feature-list">
-            <li>
-              Access secure, end-to-end encrypted chat.
-              <p className="list-subtitle">
-                Your messages and connections stay fully decentralized.
-              </p>
-            </li>
-            <li>
-              Build your verified on-chain identity.
-              <p className="list-subtitle">
-                Your wallet address doubles as your login.
-              </p>
-            </li>
-            <li>
-              Get started with no passwords or centralized storage.
-              <p className="list-subtitle">
-                All your data remains in your control.
-              </p>
-            </li>
-          </ul>
+          <ul className="connect-feature-list">
+  <li className="connect-feature-item">
+    <span className="connect-pulse-dot" aria-hidden="true" />
+    <div className="connect-feature-content">
+      <p className="connect-feature-title">
+        Access secure, end-to-end encrypted chat.
+      </p>
+      <p className="connect-feature-subtitle">
+        Your messages and connections stay fully decentralized.
+      </p>
+    </div>
+  </li>
 
-          <div className="metric-grid">
-            <div className="metric-card">
+  <li className="connect-feature-item">
+    <span className="connect-pulse-dot" aria-hidden="true" />
+    <div className="connect-feature-content">
+      <p className="connect-feature-title">
+        Build your verified on-chain identity.
+      </p>
+      <p className="connect-feature-subtitle">
+        Your wallet address doubles as your login.
+      </p>
+    </div>
+  </li>
+
+  <li className="connect-feature-item">
+    <span className="connect-pulse-dot" aria-hidden="true" />
+    <div className="connect-feature-content">
+      <p className="connect-feature-title">
+        Get started with no passwords or centralized storage.
+      </p>
+      <p className="connect-feature-subtitle">
+        All your data remains in your control.
+      </p>
+    </div>
+  </li>
+</ul>
+
+
+          {/* <div className="metric-grid">
+             <div className="metric-card">
               <strong>98%</strong>
               <span>Successful Wallet Connections</span>
               <p className="list-subtitle">Seamless onboarding via MetaMask</p>
@@ -108,14 +126,15 @@ const ConnectPage = () => {
               <span>User Ownership</span>
               <p className="list-subtitle">No centralized servers involved</p>
             </div>
-          </div>
+          </div> */}
         </div>
-      </div>
+      </div>  
 
-      <footer className="page-footer">
+      {/*<footer className="page-footer">
         <p>Built with ❤️ • CryptoComm © 2025</p>
-      </footer>
+      </footer>*/}
     </section>
+    </div>
   );
 };
 

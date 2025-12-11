@@ -1,5 +1,9 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { IoChatbubbleEllipsesOutline } from "react-icons/io5";
+import { FaUser } from "react-icons/fa";
+import { FaUserFriends } from "react-icons/fa";
+import { IoHomeSharp } from "react-icons/io5";
 import "./pageTheme.css";
 
 const TopNavBar = ({ title = "CryptoComm" }) => {
@@ -16,16 +20,28 @@ const TopNavBar = ({ title = "CryptoComm" }) => {
 
         {/* Navigation Links */}
         <nav className="nav-links">
-          <button onClick={() => navigate("/dashboard")}>🏠 Dashboard</button>
-          <button onClick={() => navigate("/friends")}>👥 Friends</button>
-          <button onClick={() => navigate("/chat")}>💬 Chat</button>
-          <button onClick={() => navigate("/profile")}>👤 Profile</button>
+          <button onClick={() => navigate("/dashboard")} className="nav-item">
+            <span className="nav-icon"><IoHomeSharp /></span>
+            <span className="nav-text">Dashboard</span>
+          </button>
+          <button onClick={() => navigate("/friends")} className="nav-item">
+            <span className="nav-icon"><FaUserFriends /></span> 
+            <span className="nav-text">Friends</span>
+          </button>
+          <button onClick={() => navigate("/chat")} className="nav-item">
+            <span className="nav-icon"><IoChatbubbleEllipsesOutline /></span>
+           <span className="nav-text">Chat</span>
+          </button>
+          <button onClick={() => navigate("/profile")} className="nav-item">
+              <span className="nav-icon"><FaUser /></span>
+              <span className="nav-text">Profile</span>
+          </button>
         </nav>
 
         {/* Right Section (Wallet / Logout) */}
         <div className="nav-actions">
           <button className="logout-btn" onClick={() => navigate("/")}>
-            🚪 Logout
+            Logout
           </button>
         </div>
       </div>

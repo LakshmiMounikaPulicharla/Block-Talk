@@ -41,7 +41,7 @@ const RegisterPage = () => {
           const exists = await contract.userExists(account);
           if (exists) {
             setAlreadyRegistered(true);
-            //setTimeout(() => navigate("/dashboard"), 1500);
+            setTimeout(() => navigate("/dashboard"), 1500);
           }
         } catch (userCheckError) {
           // If userExists fails (might be first time), that's okay - user can register
@@ -174,7 +174,7 @@ const RegisterPage = () => {
       const receipt = await tx.wait();
       console.log("✅ Transaction confirmed! Block:", receipt.blockNumber);
 
-      alert("🎉 Registration successful!");
+      alert("Registration successful!");
       navigate("/dashboard");
     } catch (error) {
       console.error("❌ Registration error:", error);
@@ -212,8 +212,9 @@ const RegisterPage = () => {
   };
 
   return (
-    <section className="page-section">
-      <TopNavBar/>
+    <div className="page-background-wrapper bg-register">
+      <section className="page-section">
+      {/*<TopNavBar/>*/}
       <header className="page-header">
         <h1>Create Your CryptoComm Account</h1>
         <p>
@@ -226,23 +227,24 @@ const RegisterPage = () => {
         {/* Registration Form Card */}
         <div className="glass-card focus form-card">
           <div className="card-heading">
-            <h2>🪄 Register on CryptoComm</h2>
+            <h2>Register on CryptoComm</h2>
             <p>Choose a unique username to create your account.</p>
           </div>
 
           {!isConnected ? (
             <button className="primary-btn" onClick={connectWallet}>
-              🔗 Connect MetaMask
+               Connect MetaMask
             </button>
           ) : (
             <div className="wallet-chip">
-              ✅ Connected: {account.slice(0, 6)}...{account.slice(-4)}
+              ✅ Connected: {account.slice(2, 6)}...{account.slice(-4)}
             </div>
           )}
 
           {alreadyRegistered ? (
             <p className="callout success">
-              🎉 You’re already registered! Redirecting to Dashboard...
+               You’re already registered! Redirecting to Dashboard...
+
             </p>
           ) : (
             <>
@@ -261,7 +263,7 @@ const RegisterPage = () => {
                 onClick={registerUser}
                 disabled={loading || !isConnected}
               >
-                {loading ? "⏳ Registering..." : "📝 Create Account"}
+                {loading ? "Registering..." : "Create Account"}
               </button>
 
               <p className="note list-subtitle">
@@ -277,10 +279,11 @@ const RegisterPage = () => {
         </div>
       </div>
 
-      <footer className="page-footer">
+      {/*<footer className="page-footer">
         <p>Powered by Ethereum • Built with ❤️ by CryptoComm</p>
-      </footer>
+      </footer>*/}
     </section>
+    </div>
   );
 };
 

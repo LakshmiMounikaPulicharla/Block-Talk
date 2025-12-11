@@ -2,7 +2,7 @@
 pragma solidity ^0.8.0;
 
 /// @title User Registration Contract for CryptoComm
-/// @notice Manages user registration, username lookup, and friend relationships for the decentralized chat system.
+/// @notice Manages user registration, username lookup, friend relationships and friend-requests.
 contract UserRegistration {
     // Structure to represent a user
     struct User {
@@ -12,9 +12,16 @@ contract UserRegistration {
     }
 
     // 🔹 Mappings
-    mapping(address => User) private userList;         // address → user details
-    mapping(string => bool) public usernameTaken;      // username → taken flag
-    mapping(string => address) public usernameToAddress; // ✅ username → wallet address mapping
+    mapping(address => User) private userList;                     // address → user details
+    mapping(string => bool) public usernameTaken;                  // username → taken flag
+    mapping(string => address) public usernameToAddress;           // username → wallet address mapping
+
+    // --------------------------
+    // FRIEND REQUEST STORAGE
+    // --------------------------
+    // public so Solidity generates handy getters returning address[] memory
+    mapping(address => address[]) public sentRequests;    // requests SENT by a user
+    mapping(address => address[]) public pendingRequests; // requests RECEIVED by a user (pending)
 
     // Array to store all registered users
     User[] private allUsers;
@@ -22,7 +29,12 @@ contract UserRegistration {
     // 🔹 Events
     event UserRegistered(address indexed userAddress, string username);
     event FriendAdded(address indexed user, address indexed friend);
-    event FriendRemoved(address indexed user, address indexed friend); // ✅ added event
+    event FriendRemoved(address indexed user, address indexed friend);
+
+    // Friend-request lifecycle
+    event FriendRequestSent(address indexed from, address indexed to);
+    event FriendRequestAccepted(address indexed from, address indexed to);
+    event FriendRequestRejected(address indexed from, address indexed to);
 
     /// @notice Creates a new user account with a unique username
     /// @param _name The unique username chosen by the user
@@ -40,7 +52,7 @@ contract UserRegistration {
         userList[msg.sender] = User({
             name: _name,
             userAddress: msg.sender,
-            friendList: new address[](0) 
+            friendList: new address[](0)
         });
 
         // Mark username as taken and link to wallet address
@@ -53,21 +65,7 @@ contract UserRegistration {
         emit UserRegistered(msg.sender, _name);
     }
 
-    /// @notice Adds a friend bi-directionally using their wallet address
-    /// @param _friendKey The Ethereum address of the friend to add
-    function addFriend(address _friendKey) public {
-        require(bytes(userList[msg.sender].name).length != 0, "Create an account first!");
-        require(bytes(userList[_friendKey].name).length != 0, "Friend not registered!");
-        require(msg.sender != _friendKey, "Cannot add yourself as a friend!");
-        require(!_isAlreadyFriend(msg.sender, _friendKey), "Already friends!");
-
-        _addFriend(msg.sender, _friendKey);
-        _addFriend(_friendKey, msg.sender);
-
-        emit FriendAdded(msg.sender, _friendKey);
-    }
-
-    /// @notice Internal helper to add a friend to the list
+    /// @notice Internal helper to add a friend to the list (one direction)
     function _addFriend(address user, address friendKey) internal {
         userList[user].friendList.push(friendKey);
     }
@@ -109,12 +107,98 @@ contract UserRegistration {
         }
         return false;
     }
-    
+
     /// @notice Public function to check if two users are friends
     /// @dev Exposed for Message contract to validate friendships
     function areFriends(address user1, address user2) public view returns (bool) {
         return _isAlreadyFriend(user1, user2) && _isAlreadyFriend(user2, user1);
     }
+
+
+    // FRIEND REQUEST FUNCTIONS 
+
+    /// @notice Send a friend request to another user
+    /// @param _to Address of the user to send request to
+    function sendFriendRequest(address _to) public {
+        require(bytes(userList[msg.sender].name).length != 0, "You must register first!");
+        require(bytes(userList[_to].name).length != 0, "User not registered!");
+        require(msg.sender != _to, "Cannot send request to yourself!");
+        require(!_isAlreadyFriend(msg.sender, _to), "Already friends!");
+        require(!_exists(sentRequests[msg.sender], _to), "Request already sent!");
+        require(!_exists(pendingRequests[msg.sender], _to), "User already sent you a request!");
+
+        sentRequests[msg.sender].push(_to);
+        pendingRequests[_to].push(msg.sender);
+
+        emit FriendRequestSent(msg.sender, _to);
+    }
+
+    /// @notice Accept an incoming friend request (caller accepts request from _from)
+    /// @param _from Address of the user who sent the request
+    function acceptFriendRequest(address _from) public {
+        require(_exists(pendingRequests[msg.sender], _from), "No request from this user!");
+        require(!_isAlreadyFriend(msg.sender, _from), "Already friends!");
+
+        // Add friendship both ways
+        _addFriend(msg.sender, _from);
+        _addFriend(_from, msg.sender);
+
+        // Remove pending/sent entries
+        _removeRequest(pendingRequests[msg.sender], _from);
+        _removeRequest(sentRequests[_from], msg.sender);
+
+        emit FriendRequestAccepted(_from, msg.sender);
+        emit FriendAdded(msg.sender, _from);
+    }
+    
+    /// @notice Cancel a friend request that YOU previously sent
+    /// @param _to The address you sent the request to
+    function cancelFriendRequest(address _to) public {
+        require(_exists(sentRequests[msg.sender], _to), "No sent request to this user!");
+
+        // Remove from the sender's sentRequests
+        _removeRequest(sentRequests[msg.sender], _to);
+       // Remove from receiver's pendingRequests
+       _removeRequest(pendingRequests[_to], msg.sender);
+
+       // Optional: you can emit a specific event if you want
+       // emit FriendRequestRejected(msg.sender, _to);
+    }
+
+    /// @notice Reject an incoming friend request (caller rejects request from _from)
+    /// @param _from Address of the user who sent the request
+    function rejectFriendRequest(address _from) public {
+        require(_exists(pendingRequests[msg.sender], _from), "No request from this user!");
+
+        _removeRequest(pendingRequests[msg.sender], _from);
+        _removeRequest(sentRequests[_from], msg.sender);
+
+        emit FriendRequestRejected(_from, msg.sender);
+    }
+
+    // INTERNAL HELPERS
+
+    /// @notice Checks whether an address exists in an address[] (memory)
+    function _exists(address[] memory arr, address user) internal pure returns (bool) {
+        for (uint i = 0; i < arr.length; i++) {
+            if (arr[i] == user) return true;
+        }
+        return false;
+    }
+
+    /// @notice Removes the first occurrence of `user` from a storage array by swapping with last and pop
+    function _removeRequest(address[] storage arr, address user) internal {
+        uint len = arr.length;
+        for (uint i = 0; i < len; i++) {
+            if (arr[i] == user) {
+                arr[i] = arr[len - 1];
+                arr.pop();
+                break;
+            }
+        }
+    }
+
+    // READ / VIEW FUNCTIONS
 
     /// @notice Returns user details (name, address, friend list) by wallet
     function getUser(address _userAddress)
@@ -126,7 +210,8 @@ contract UserRegistration {
         return (u.name, u.userAddress, u.friendList);
     }
 
-    /// @notice Returns user details by username
+    /// @notice Returns user details by username (using the mapping)
+    /// @param _username The username to search
     function getUserByUsername(string memory _username)
         public
         view
@@ -146,5 +231,14 @@ contract UserRegistration {
     /// @notice Checks if a user exists by wallet address
     function userExists(address _userAddress) public view returns (bool) {
         return bytes(userList[_userAddress].name).length != 0;
+    }
+
+    /// @notice Utility getters for pending/sent requests (these are auto-generated if mapping public, but included for clarity)
+    function getPendingRequests(address _user) public view returns (address[] memory) {
+        return pendingRequests[_user];
+    }
+
+    function getSentRequests(address _user) public view returns (address[] memory) {
+        return sentRequests[_user];
     }
 }

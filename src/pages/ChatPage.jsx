@@ -1,3 +1,4 @@
+// ChatPage.jsx — improved, safer debug + guards
 import React, { useState, useEffect, useRef, useContext } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { ethers } from "ethers";
@@ -26,8 +27,9 @@ const ChatPage = () => {
   const [search, setSearch] = useState("");
   const [currentUserName, setCurrentUserName] = useState("");
 
-
-  // 🔹 Helper: get contract
+  // -----------------------
+  // Helper: get contract
+  // -----------------------
   const getContract = async (address, abi) => {
     const network = { chainId: 31337, name: "hardhat" };
     const provider = new ethers.BrowserProvider(window.ethereum, network);
@@ -35,7 +37,47 @@ const ChatPage = () => {
     return new ethers.Contract(address, abi, signer);
   };
 
-  // 🔹 Fetch friends
+  // expose for console debugging if needed
+  // usage in browser console: await window._getContract(messageContractAddress, messageABI)
+  useEffect(() => {
+    window._getContract = getContract;
+    return () => {
+      try { delete window._getContract; } catch (e) {}
+    };
+  }, []);
+
+  // Safer inspection of contract interface (works across ethers versions)
+  const listContractFunctions = (contract) => {
+    if (!contract || !contract.interface) return [];
+    const iface = contract.interface;
+    try {
+      if (iface.functions && Object.keys(iface.functions).length > 0) {
+        return Object.keys(iface.functions);
+      }
+      if (iface.fragments && typeof iface.fragments.entries === "function") {
+        // ethers v6 Map-like fragments
+        return Array.from(iface.fragments.keys());
+      }
+      // Try format fallback
+      if (typeof iface.format === "function") {
+        try {
+          const formatted = iface.format();
+          // Return each non-empty line (best-effort)
+          return formatted.split("\n").map((l) => l.trim()).filter(Boolean);
+        } catch (e) {
+          return [];
+        }
+      }
+    } catch (e) {
+      console.warn("Could not list contract functions:", e);
+      return [];
+    }
+    return [];
+  };
+
+  // -----------------------
+  // Fetch friends
+  // -----------------------
   const fetchFriends = async () => {
     if (!isConnected || !account) return;
     try {
@@ -68,23 +110,28 @@ const ChatPage = () => {
       console.error("Error fetching friends:", err);
     }
   };
-// 🔹 Fetch current user's username
-const fetchCurrentUser = async () => {
-  if (!isConnected || !account) return;
-  try {
-    const network = { chainId: 31337, name: "hardhat" };
-    const provider = new ethers.BrowserProvider(window.ethereum, network);
-    const signer = await provider.getSigner();
-    const userContract = new ethers.Contract(userContractAddress, userABI, signer);
 
-    const [userName] = await userContract.getUser(account);
-    setCurrentUserName(userName);
-  } catch (err) {
-    console.error("Error fetching current user:", err);
-  }
-};
+  // -----------------------
+  // Fetch current user name
+  // -----------------------
+  const fetchCurrentUser = async () => {
+    if (!isConnected || !account) return;
+    try {
+      const network = { chainId: 31337, name: "hardhat" };
+      const provider = new ethers.BrowserProvider(window.ethereum, network);
+      const signer = await provider.getSigner();
+      const userContract = new ethers.Contract(userContractAddress, userABI, signer);
 
-  // 🔹 Filter friends
+      const [userName] = await userContract.getUser(account);
+      setCurrentUserName(userName);
+    } catch (err) {
+      console.error("Error fetching current user:", err);
+    }
+  };
+
+  // -----------------------
+  // Filter friends
+  // -----------------------
   useEffect(() => {
     if (search.trim() === "") setFilteredFriends(friends);
     else {
@@ -99,7 +146,9 @@ const fetchCurrentUser = async () => {
     }
   }, [search, friends]);
 
-  // 🔹 Fetch messages
+  // -----------------------
+  // Fetch messages
+  // -----------------------
   const fetchMessages = async () => {
     if (!isConnected || !selectedFriend?.address) return;
     try {
@@ -107,65 +156,35 @@ const fetchCurrentUser = async () => {
       const messageContract = await getContract(messageContractAddress, messageABI);
       const onchainMessages = await messageContract.readMessages(selectedFriend.address);
 
-      // Process messages with decryption
       const formatted = await Promise.all(
         onchainMessages.map(async (m, i) => {
           let messageText = m.message;
-          
-          // Decrypt if message is encrypted and it's from friend
+
           if (m.isEncrypted && m.sender.toLowerCase() !== account.toLowerCase()) {
             console.log("DECRYPTION:");
-            console.log("Ciphertext (from blockchain):", m.message.substring(0, 50) + "...");
+            console.log("Ciphertext (from blockchain):", (m.message || "").substring(0, 50) + "...");
             try {
-              messageText = await decryptMessageFromSender(
-                m.message,
-                account,
-                m.sender
-              );
+              messageText = await decryptMessageFromSender(m.message, account, m.sender);
               console.log("Plaintext (decrypted):", messageText);
-              console.log(" Decryption successful!");
             } catch (decryptError) {
               console.error("Decryption failed for message:", i, decryptError);
               messageText = "🔒 [Encrypted message - decryption failed]";
             }
           } else if (m.isEncrypted && m.sender.toLowerCase() === account.toLowerCase()) {
-            // Messages we sent are already stored encrypted, try to decrypt for display
-            console.log("DECRYPTION(sent message):");
-            console.log(" Ciphertext (from blockchain):", m.message.substring(0, 50) + "...");
+            // Try to decrypt our own message for display
             try {
-              messageText = await decryptMessageFromSender(
-                m.message,
-                account,
-                selectedFriend.address
-              );
-              console.log("Plaintext (decrypted for display):", messageText);
-            } catch (decryptError) {
-              // If decryption fails, keep encrypted text
+              messageText = await decryptMessageFromSender(m.message, account, selectedFriend.address);
+            } catch {
               messageText = m.message;
-              console.warn(" Could not decrypt own message");
             }
           }
-
-          // Mark as delivered when fetching (optional - disabled due to contract issues)
-          // Status updates are non-critical - messages work without them
-          // if (m.sender.toLowerCase() !== account.toLowerCase() && m.status < 1) {
-          //   try {
-          //     const tx = await messageContract.markMessageAsDelivered(
-          //       selectedFriend.address,
-          //       i
-          //     );
-          //     await tx.wait();
-          //   } catch (statusError) {
-          //     // Silently fail - status updates are optional
-          //   }
-          // }
 
           return {
             id: i + 1,
             sender: m.sender.toLowerCase() === account.toLowerCase() ? "me" : "friend",
             text: messageText,
             type: m.msgType || "text",
-            status: m.status || 0, // 0=sent, 1=delivered, 2=read
+            status: m.status || 0,
             isEncrypted: m.isEncrypted || false,
             time: new Date(Number(m.timestamp) * 1000).toLocaleTimeString([], {
               hour: "2-digit",
@@ -176,22 +195,6 @@ const fetchCurrentUser = async () => {
       );
 
       setMessages(formatted);
-      
-      // Auto-mark new messages as read when displayed (optional - disabled due to contract issues)
-      // Status updates are non-critical - messages work without them
-      // formatted.forEach(async (msg, idx) => {
-      //   if (msg.sender === "friend" && msg.status < 2) {
-      //     try {
-      //       const tx = await messageContract.markMessageAsRead(
-      //         selectedFriend.address,
-      //         idx
-      //       );
-      //       await tx.wait();
-      //     } catch (statusError) {
-      //       // Silently fail - status updates are optional
-      //     }
-      //   }
-      // });
     } catch (err) {
       console.error("Error fetching messages:", err);
     } finally {
@@ -199,7 +202,9 @@ const fetchCurrentUser = async () => {
     }
   };
 
-  // 🔹 Send text
+  // -----------------------
+  // Send text message
+  // -----------------------
   const sendMessage = async () => {
     if (!isConnected) return alert("Connect your wallet first!");
     if (newMessage.trim() === "") return alert("Message cannot be empty!");
@@ -207,19 +212,33 @@ const fetchCurrentUser = async () => {
 
     try {
       setLoading(true);
+      const provider = new ethers.BrowserProvider(window.ethereum, { chainId: 31337, name: "hardhat" });
+
+      // quick guard: make sure contract exists at address
+      const onchainCode = await provider.getCode(messageContractAddress);
+      if (!onchainCode || onchainCode === "0x") {
+        alert("No contract deployed at messageContractAddress. Check deployment.");
+        console.error("No contract bytecode at:", messageContractAddress);
+        return;
+      }
+
       const messageContract = await getContract(messageContractAddress, messageABI);
-      
+
+      // Print safe contract interface info for debugging (no crash)
+      try {
+        const funcs = listContractFunctions(messageContract);
+        console.log("DEBUG >> message contract functions:", funcs);
+      } catch (e) {
+        console.warn("DEBUG >> could not list contract functions:", e);
+      }
+
       // Encrypt message before sending
       console.log("ENCRYPTION:");
       console.log("Plaintext:", newMessage);
-      
+
       let encryptedMessage;
       try {
-        encryptedMessage = await encryptMessageForRecipient(
-          newMessage,
-          account,
-          selectedFriend.address
-        );
+        encryptedMessage = await encryptMessageForRecipient(newMessage, account, selectedFriend.address);
         console.log(" Ciphertext (encrypted):", encryptedMessage);
         console.log(" Length: Plaintext =", newMessage.length, "chars, Ciphertext =", encryptedMessage.length, "chars");
       } catch (encryptError) {
@@ -242,17 +261,21 @@ const fetchCurrentUser = async () => {
       await fetchMessages();
     } catch (error) {
       console.error("Send message failed:", error);
-      if (error.message && error.message.includes("Users must be friends")) {
+      // show the most useful fields if present
+      const reason = error?.reason || error?.error?.message || error?.message || (error?.data && String(error.data));
+      if (String(reason).toLowerCase().includes("users must be friends")) {
         alert("You must be friends to send messages!");
       } else {
-        alert("Transaction failed. Check console for details.");
+        alert("Transaction failed. Check console for details.\n" + reason);
       }
     } finally {
       setLoading(false);
     }
   };
 
-  // 🔹 Upload + send file
+  // -----------------------
+  // Upload + send file
+  // -----------------------
   const handleFileUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -264,12 +287,11 @@ const fetchCurrentUser = async () => {
       const fileLink = `https://gateway.lighthouse.storage/ipfs/${output.data.Hash}`;
 
       const messageContract = await getContract(messageContractAddress, messageABI);
-      // File links on IPFS are not encrypted (IPFS handles storage)
       const tx = await messageContract.sendMessage(
         selectedFriend.address,
         fileLink,
         "file",
-        false // isEncrypted = false (IPFS link, not encrypted)
+        false // isEncrypted = false
       );
       await tx.wait();
 
@@ -277,18 +299,19 @@ const fetchCurrentUser = async () => {
       await fetchMessages();
     } catch (error) {
       console.error("File upload failed:", error);
-      alert("File upload or transaction failed!");
+      alert("File upload or transaction failed! Check console for details.");
     } finally {
       setLoading(false);
     }
   };
 
-  // 🔹 File download handler
+  // -----------------------
+  // Download / metadata utils
+  // -----------------------
   const downloadFile = async (ipfsUrl) => {
     try {
       const response = await fetch(ipfsUrl);
       const blob = await response.blob();
-
       const filename = decodeURIComponent(ipfsUrl.split("/").pop());
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
@@ -304,7 +327,6 @@ const fetchCurrentUser = async () => {
     }
   };
 
-  // 🔹 Fetch metadata for a file
   const fetchMetadata = async (ipfsUrl) => {
     try {
       const response = await fetch(ipfsUrl, { method: "HEAD" });
@@ -325,36 +347,41 @@ const fetchCurrentUser = async () => {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
   };
 
-  // 🔹 Scroll
+  // -----------------------
+  // Scroll to bottom
+  // -----------------------
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // 🔹 Initial load
+  // -----------------------
+  // Initial load — NOTE: added braces so both functions only run when connected
+  // -----------------------
   useEffect(() => {
-    if (isConnected) 
+    if (isConnected) {
       fetchCurrentUser();
       fetchFriends();
+    }
   }, [isConnected, account]);
 
   useEffect(() => {
     if (selectedFriend) fetchMessages();
   }, [selectedFriend]);
 
+  // -----------------------
+  // UI
+  // -----------------------
   return (
     <div className="chat-container">
       {/* Sidebar */}
       <aside className="chat-sidebar">
         <div className="sidebar-header">
-      <div className="profile-avatar" onClick={() => navigate("/profile")} title="View Profile">
-       {currentUserName ? currentUserName[0].toUpperCase() : "U"}
-      </div>
-      <h2>💬 Chats</h2>
-     <button className="friends-btn" onClick={() => navigate("/friends")}>
-      👥 Friends
-    </button>
-    </div>
-
+          <div className="profile-avatar" onClick={() => navigate("/profile")} title="View Profile">
+            {currentUserName ? currentUserName[0].toUpperCase() : "U"}
+          </div>
+          <h2>💬 Chats</h2>
+          <button className="friends-btn" onClick={() => navigate("/friends")}>👥 Friends</button>
+        </div>
 
         <div className="sidebar-search">
           <input
@@ -396,9 +423,7 @@ const fetchCurrentUser = async () => {
                 <h3>{selectedFriend.name}</h3>
                 <p className="chat-address">{selectedFriend.address}</p>
               </div>
-              <button onClick={() => navigate("/dashboard")} className="exit-btn">
-                ⬅ Dashboard
-              </button>
+              <button onClick={() => navigate("/dashboard")} className="exit-btn">⬅ Dashboard</button>
             </header>
 
             <div className="chat-messages">
@@ -408,18 +433,10 @@ const fetchCurrentUser = async () => {
                 messages.map((m) => (
                   <div key={m.id} className={`message ${m.sender === "me" ? "sent" : "received"}`}>
                     {m.type === "file" ? (
-                      <FileBubble
-                        ipfsUrl={m.text}
-                        fetchMetadata={fetchMetadata}
-                        downloadFile={downloadFile}
-                      />
+                      <FileBubble ipfsUrl={m.text} fetchMetadata={fetchMetadata} downloadFile={downloadFile} />
                     ) : (
                       <>
                         <p className="message-text">{m.text}</p>
-                        {m.isEncrypted && (
-                          <span className="encryption-badge" title="End-to-end encrypted">
-                          </span>
-                        )}
                       </>
                     )}
                     <div className="message-footer">
@@ -433,7 +450,7 @@ const fetchCurrentUser = async () => {
                   </div>
                 ))
               ) : (
-                <div style={{ textAlign: 'center' }}>
+                <div style={{ textAlign: "center" }}>
                   <p>No messages yet. Start chatting!</p>
                 </div>
               )}
@@ -463,7 +480,9 @@ const fetchCurrentUser = async () => {
   );
 };
 
-// 🔹 Component for file messages
+// -----------------------
+// FileBubble component
+// -----------------------
 const FileBubble = ({ ipfsUrl, fetchMetadata, downloadFile }) => {
   const [meta, setMeta] = useState(null);
   const [loading, setLoading] = useState(false);

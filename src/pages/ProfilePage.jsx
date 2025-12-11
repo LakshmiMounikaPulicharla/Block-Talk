@@ -60,7 +60,8 @@ const ProfilePage = () => {
   }, [username]);
 
   return (
-    <section className="page-section">
+    <div className="page-background-wrapper bg-friends" >
+      <section className="page-section">
       <TopNavBar title="Profile"/>
       <header className="page-header">
         <h1>Your Profile</h1>
@@ -120,6 +121,7 @@ const ProfilePage = () => {
         </div>
       )}
     </section>
+    </div>
   );
 };
 

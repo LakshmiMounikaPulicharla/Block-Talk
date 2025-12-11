@@ -190,6 +190,14 @@ body {
   /* NEW: extra bottom padding equals or exceeds input height so messages won't be hidden */
   padding-bottom: 140px;      /* NEW: adjust if your .chat-input height changes */
   background: repeating-linear-gradient(180deg, transparent, transparent 120px, rgba(0,0,0,0.01) 121px);
+  /*
+  background-image: 
+    url("/assets/Chat-background.png"),
+    repeating-linear-gradient(180deg, transparent, transparent 120px, rgba(0,0,0,0.01) 121px);
+  background-repeat: no-repeat, repeat;
+  background-position: center top, 0 0;
+  background-size: cover, auto;
+  */
 }
 
 /* NEW: custom class for nicer scrollbar (non-overlapping) */
