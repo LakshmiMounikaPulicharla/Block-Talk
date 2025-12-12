@@ -1,0 +1,132 @@
+/* ====== CryptoComm Dashboard Page ====== */
+/*
+body {
+  margin: 0;
+  font-family: "Poppins", sans-serif;
+  background: radial-gradient(circle at top right, #0a0a0a, #151515, #000);
+  color: #fff;
+  height: 100vh;
+  overflow-x: hidden;
+}
+
+.dashboard-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+
+.dashboard-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: rgba(15, 15, 15, 0.95);
+  border-bottom: 1px solid rgba(0, 255, 255, 0.2);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 60px;
+  z-index: 10;
+  backdrop-filter: blur(10px);
+}
+
+.dashboard-header h1 {
+  font-size: 1.8rem;
+  background: linear-gradient(90deg, #00eaff, #6effa5);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: 1px;
+}
+
+.dashboard-header nav button {
+  background: transparent;
+  border: none;
+  color: #bbb;
+  font-size: 1rem;
+  margin-left: 25px;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.dashboard-header nav button:hover {
+  color: #00eaff;
+}
+
+
+.dashboard-main {
+  padding-top: 120px;
+  width: 80%;
+  max-width: 1000px;
+  text-align: center;
+}
+
+
+.welcome-card {
+  background: rgba(20, 20, 20, 0.9);
+  border: 1px solid rgba(0, 255, 255, 0.2);
+  border-radius: 20px;
+  padding: 40px 60px;
+  margin-bottom: 50px;
+  box-shadow: 0 0 25px rgba(0, 255, 255, 0.25);
+  transition: all 0.3s ease;
+}
+
+.welcome-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 0 35px rgba(0, 255, 255, 0.4);
+}
+
+.welcome-card h2 {
+  color: #6effa5;
+  margin-bottom: 10px;
+}
+
+.wallet-info {
+  color: #00eaff;
+  font-family: monospace;
+  margin-top: 15px;
+}
+
+
+.quick-actions {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  flex-wrap: wrap;
+}
+
+.action-card {
+  width: 250px;
+  height: 160px;
+  background: rgba(0, 255, 255, 0.05);
+  border: 1px solid rgba(0, 255, 255, 0.15);
+  border-radius: 16px;
+  padding: 20px;
+  cursor: pointer;
+  transition: transform 0.3s, box-shadow 0.3s ease;
+}
+
+.action-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 0 20px rgba(0, 255, 255, 0.4);
+  background: rgba(0, 255, 255, 0.1);
+}
+
+.action-card h3 {
+  margin-top: 0;
+  color: #6effa5;
+}
+
+.action-card p {
+  color: #bbb;
+  font-size: 0.9rem;
+}
+
+.dashboard-footer {
+  margin-top: 60px;
+  padding: 20px;
+  color: #777;
+  font-size: 0.85rem;
+}
+*/

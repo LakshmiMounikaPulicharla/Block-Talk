@@ -1,0 +1,609 @@
+/* ====== ChatPage.css – Light Theme with Orange Accent ======
+   - Replaces green gradient with orange.
+   - Restores safe scrolling and prevents overlap with input.
+   - Comments added for every NEW/UPDATED rule/class to ease debugging.
+*/
+
+/* Root palette (changed accent to orange) */
+:root{
+  --bg: #ffffff;
+  --panel: #f5f6f7;
+  --muted: #6b7280;
+  --accent-1: #ff8a00; /* NEW: primary orange */
+  --accent-2: #ffc857; /* NEW: secondary orange */
+  --border: #e6eef0;
+  --text: #0f1724;
+  --glass: rgba(255,255,255,0.7);
+}
+
+/* Page */
+body {
+  margin: 0;
+  font-family: "Poppins", sans-serif;
+  background:
+  linear-gradient(
+    to bottom, 
+    #1f2b3c 0%, 
+    #050505 80%, 
+    #712b08 100%
+  );
+  color: var(--text);
+
+}
+
+/* Layout */
+.chat-container {
+  display: flex;
+  height: 100vh;
+  gap: 12px;
+  padding: 12px;
+  box-sizing: border-box;
+}
+
+/* Sidebar (unchanged structure) */
+.chat-sidebar {
+  width: 300px;
+  background: rgba(255, 255, 255, 0.08); /* 8% white */
+  backdrop-filter: blur(20px); /* GLASS EFFECT */
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,0.15);
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+
+.sidebar-header {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  background: rgba(255, 255, 255, 0.08); /* transparency */
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.15);
+}
+
+.sidebar-header h2 {
+  margin: 0;
+  font-size: 1.15rem;
+  color: white;
+}
+.sidebar-header button {
+  background: transparent;
+  border: 1px solid var(--accent-1);
+  color: var(--accent-1);
+  padding: 6px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+/* Search area */
+.sidebar-search {
+  margin-bottom: 14px;
+}
+.sidebar-search input {
+  width: 100%;
+  display: block;
+  box-sizing: border-box;
+  padding: 10px 14px 10px 40px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: linear-gradient(180deg, #ffffff, #fbfdff);
+  font-size: 0.95rem;
+  color: var(--text);
+  outline: none;
+  box-shadow: 0 2px 6px rgba(50,60,70,0.04);
+  transition: box-shadow 0.15s, border-color 0.15s, transform 0.06s;
+  background-image: url("data:image/svg+xml;utf8,<svg fill='%23ff8a00' height='18' viewBox='0 0 24 24' width='18' xmlns='http://www.w3.org/2000/svg'><path d='M15.5 14h-.79l-.28-.27A6.471 6.471 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zM11 15a4 4 0 110-8 4 4 0 010 8z'/></svg>");
+  background-repeat: no-repeat;
+  background-position: 12px center;
+}
+.sidebar-search input::placeholder {
+  color: var(--muted);
+}
+.sidebar-search input:focus {
+  border-color: var(--accent-1);
+  box-shadow: 0 6px 20px rgba(255, 138, 0, 0.08); /* NEW: orange focus */
+  transform: translateY(-1px);
+}
+
+/* Friends list */
+.no-friends{
+  color:#FFFFFF;
+  text-align: center;
+  margin-top: 20px;
+}
+.friend-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  flex-grow: 1;
+  overflow-y: auto;
+}
+.friend-item {
+  padding: 12px 10px;
+  border-radius: 10px;
+  background: transparent;
+  margin-bottom: 10px;
+  cursor: pointer;
+  transition: background 0.18s, transform 0.08s;
+  border: 1px solid rgba(255, 136, 0, 0.729);
+}
+.friend-item:hover {
+  background: #d0cfcf;
+  transform: translateY(-2px);
+  border-color: var(--border);
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.04);
+}
+.friend-item:hover .friend-name {
+  color: #000000;
+}
+.friend-item.active {
+  background: #ffd9b8;
+  border: 1px solid rgb(255, 136, 0);
+}
+.friend-item.active .friend-name {
+  color: #000000;
+}
+.friend-name {
+  font-weight: 600;
+  margin: 0 0 4px 0;
+  color: #FFFFFF;
+}
+.friend-address {
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-family: monospace;
+}
+
+/* ========================================
+   CHAT AREA - Building from scratch
+   ======================================== */
+
+/* Main chat container */
+.chat-main {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  gap:10px;
+}
+
+/* Chat header - positioned at the very top */
+.chat-header {
+position: relative; /* Keeps z-index working */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 20px;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+  
+  /* IMPORTANT: Prevents the header from getting squished */
+  flex-shrink: 0; 
+  z-index: 10;
+}
+
+.chat-friend-info h3 {
+  margin: 0;
+  color: white;
+  font-size: 1.2rem;
+}
+
+.chat-address {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.85rem;
+  font-family: monospace;
+  margin-top: 4px;
+}
+
+.exit-btn {
+  background: transparent;
+  border: 1px solid var(--accent-1);
+  border-radius: 8px;
+  color: var(--accent-1);
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.exit-btn:hover {
+  background: var(--accent-1);
+  color: white;
+}
+
+/* Messages area - with top padding to account for fixed header */
+.chat-messages {
+  flex-grow: 1;
+  /* CHANGED: Reduced bottom padding to 10px */
+  padding: 20px 20px 10px 20px; 
+  
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background-color: #152530;
+  background-image: url('../assets/Chat\ background\ dark.png');
+  background-repeat: repeat;
+  background-size: 600px; 
+  background-blend-mode: overlay; 
+  
+  /* NEW: Adds the rounded bottom corners */
+  border-radius: 0 0 24px 24px;
+}
+.chat-messages::-webkit-scrollbar {
+  width: 8px;
+}
+
+.chat-messages::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.chat-messages::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+}
+
+
+.message {
+  width: fit-content;
+  max-width: 65%;
+  min-width: 70px;
+  padding: 6px 10px 4px 6px; 
+  
+  border-radius: 12px;
+  line-height: 1.4;
+  font-size: 0.95rem;
+  animation: fadeIn 0.18s ease;
+  
+  /* Layout: Column stack */
+  display: flex;
+  flex-direction: column;
+  
+  /* IMPORTANT: Ensures content aligns to the left edge */
+  
+  
+  word-wrap: break-word;
+  word-break: break-word;
+}
+
+.message.sent {
+  align-self: flex-end;
+  background: #8f530d;
+  color: white;
+  border-bottom-right-radius: 4px;
+}
+
+.message.received {
+  align-self: flex-start;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  color: white;
+  border-bottom-left-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+/* Add this class to your <p> tag inside the message */
+.message-text {
+  margin: 0;
+  padding: 0;
+  text-align: left;
+  align-items: flex-start; 
+  /* Ensures text doesn't drift if the bubble gets wide */
+  width: 100%; 
+}
+
+/* If you didn't add the class name in JSX, use this: */
+.message p {
+  margin: 0;
+  padding: 0;
+  text-align: left;
+  white-space: pre-wrap;
+  flex-grow: 1;
+}
+
+.message-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  
+  /* IMPORTANT: Overrides parent alignment to stick to the right */
+  align-self: flex-end; 
+  
+  margin-top: 2px;
+  height: auto;
+  opacity: 0.7;
+  gap: 4px; 
+}
+
+.message-time {
+  font-size: 0.65rem;
+  line-height: 1;
+}
+.message-status {
+  font-size: 12px;
+  margin-left: 4px;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Chat input area - positioned at bottom */
+.chat-input {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  
+  /* CHANGED: Set top padding to 0 (relying on flex-gap for spacing) */
+  padding: 0 18px 14px 18px;
+  
+  background: transparent;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border-top: none;
+}
+
+/* File upload label */
+.file-label {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  cursor: pointer;
+  font-size: 1.2rem;
+  transition: all 0.2s ease;
+}
+
+.file-label:hover {
+  background: rgba(255, 255, 255, 0.15);
+  transform: translateY(-2px);
+}
+
+#file-upload {
+  display: none;
+}
+
+/* Message input field */
+.chat-input input[type="text"] {
+  flex-grow: 1;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 10px;
+  padding: 12px 16px;
+  color: white;
+  font-size: 0.95rem;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.chat-input input[type="text"]::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.chat-input input[type="text"]:focus {
+background: rgba(255, 255, 255, 0.15);
+  border-color: var(--accent-1);
+  
+  /* NEW: Adds a soft orange glow ring */
+  box-shadow: 0 0 0 4px rgba(255, 138, 0, 0.15);
+}
+
+/* Send button */
+.send-btn {
+  background: linear-gradient(90deg, var(--accent-1), var(--accent-2));
+  border: none;
+  border-radius: 10px;
+  
+  /* CHANGED: Adjusted padding for the icon */
+  padding: 12px 14px; 
+  
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 15px rgba(255, 138, 0, 0.3);
+
+  /* NEW: Centers the SVG icon perfectly */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.send-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255, 138, 0, 0.4);
+}
+
+.send-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* File bubble */
+.file-bubble {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  padding: 12px;
+  margin-top: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(8px);
+}
+
+.file-bubble h4 {
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: var(--accent-1);
+}
+
+.file-bubble p {
+  margin: 4px 0;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.85rem;
+}
+
+.file-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.file-actions .primary-btn,
+.file-actions .secondary-btn {
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.file-actions .primary-btn {
+  background: linear-gradient(90deg, var(--accent-1), var(--accent-2));
+  border: none;
+  color: white;
+}
+
+.file-actions .secondary-btn {
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.file-actions .primary-btn:hover,
+.file-actions .secondary-btn:hover {
+  transform: scale(1.05);
+}
+
+/* No chat placeholder */
+.no-chat {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 1.05rem;
+}
+
+/* Responsive tweaks */
+@media (max-width: 900px) {
+  .chat-sidebar { width: 100%; height: 180px; order: 2; }
+  .chat-main { order: 1; width: 100%; }
+  .chat-container { flex-direction: column; height: auto; padding: 8px; }
+}
+.file-bubble {
+  background: rgba(255, 255, 255, 0.07);
+  border-radius: 0.8rem;
+  padding: 0.6rem 0.8rem;
+  margin-top: 0.3rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(8px);
+  color: #fff;
+  max-width: 65%;
+  font-size: 0.85rem;
+  line-height: 1.3;
+}
+
+.file-bubble h4 {
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 0.3rem;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.file-bubble strong {
+  color: #ff8800;
+  font-size: 0.85rem;
+}
+.file-bubble p {
+  margin: 0.2rem 0;
+  color: #000;
+}
+
+.file-actions {
+  display: flex;
+  gap: 0.4rem;
+  margin-top: 0.4rem;
+}
+
+.file-actions .primary-btn,
+.file-actions .secondary-btn {
+  padding: 0.25rem 0.6rem;
+  border-radius: 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.file-actions .primary-btn {
+  background: linear-gradient(90deg, var(--accent-1), var(--accent-2));
+  border: none;
+  color: white;
+}
+
+.file-actions .secondary-btn {
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.1);
+  color: #000;
+}
+
+.file-actions .primary-btn:hover,
+.file-actions .secondary-btn:hover {
+  transform: scale(1.05);
+  opacity: 0.9;
+}
+
+/* Circular gradient avatar */
+.profile-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ffa62e, #ff6f00);
+  color: #fff;
+  font-weight: 600;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  flex-shrink: 0;
+}
+
+.profile-avatar:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 10px rgba(255, 136, 0, 0.4);
+}
+
+/* Friends button */
+.friends-btn {
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: #fff;
+  padding: 0.4rem 0.8rem;
+  border-radius: 0.6rem;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.friends-btn:hover {
+  background:orange;
+  color: white;
+}
