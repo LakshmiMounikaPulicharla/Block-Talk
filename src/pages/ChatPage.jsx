@@ -389,13 +389,14 @@ const ChatPage = () => {
             placeholder="Search friends..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
+            style={{ color: "white" }}
           />
         </div>
 
         {!isConnected ? (
           <button onClick={connectWallet} className="connect-btn">🔗 Connect MetaMask</button>
         ) : filteredFriends.length === 0 ? (
-          <p>No friends yet.</p>
+          <p className="no-friends">No friends yet.</p>
         ) : (
           <ul className="friend-list">
             {filteredFriends.map((f) => (

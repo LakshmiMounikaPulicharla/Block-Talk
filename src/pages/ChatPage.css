@@ -112,6 +112,11 @@ body {
 }
 
 /* Friends list */
+.no-friends{
+  color:#FFFFFF;
+  text-align: center;
+  margin-top: 20px;
+}
 .friend-list {
   list-style: none;
   padding: 0;
@@ -129,19 +134,25 @@ body {
   border: 1px solid rgba(255, 136, 0, 0.729);
 }
 .friend-item:hover {
-  background: #ffffff;
+  background: #d0cfcf;
   transform: translateY(-2px);
   border-color: var(--border);
   box-shadow: 0 6px 18px rgba(15, 23, 42, 0.04);
+}
+.friend-item:hover .friend-name {
+  color: #000000;
 }
 .friend-item.active {
   background: #ffd9b8;
   border: 1px solid rgb(255, 136, 0);
 }
+.friend-item.active .friend-name {
+  color: #000000;
+}
 .friend-name {
   font-weight: 600;
   margin: 0 0 4px 0;
-  color: var(--text);
+  color: #FFFFFF;
 }
 .friend-address {
   color: var(--muted);
