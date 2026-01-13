@@ -2,7 +2,6 @@
 
 Block-Talk is a decentralized messaging system designed to provide secure, scalable, and privacy-preserving communication. It uses blockchain architecture to implement mutual-consent connections, end-to-end encryption, and decentralized media storage.
 
----
 
 ## Project Type
 **Team Research Project**
@@ -10,13 +9,12 @@ Block-Talk is a decentralized messaging system designed to provide secure, scala
 ## GitHub Repository
 🔗 https://github.com/CYBER-STARK/CryptoComm
 
----
 
 ## Overview
 
 Block-Talk enables private communication by eliminating centralized servers. The system ensures that only mutually consenting users can communicate, while messages and media remain encrypted and tamper-proof.
 
----
+
 
 ## My Contributions
 
@@ -24,7 +22,7 @@ Block-Talk enables private communication by eliminating centralized servers. The
 - Developed modules for message handling and request-response logic  
 - Documented features and shared code with team members for integration  
 
----
+
 
 ## Key Features
 
@@ -32,7 +30,7 @@ Block-Talk enables private communication by eliminating centralized servers. The
 - Client-side end-to-end encryption using AES-256-GCM  
 - Decentralized media storage using IPFS  
 
----
+
 
 ## Technologies Used
 
@@ -44,7 +42,7 @@ Block-Talk enables private communication by eliminating centralized servers. The
 | Storage | IPFS |
 | Encryption | AES-256-GCM |
 
----
+
 
 ## Getting Started
 
