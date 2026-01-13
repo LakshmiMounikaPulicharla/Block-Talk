@@ -1,23 +1,58 @@
-block_talk:
-  title: "Block-Talk: Enhanced Decentralized Chat System"
-  type: "Team Research Project"
-  portfolio_copy: "https://github.com/CYBER-STARK/CryptoComm"
+# Block-Talk: Enhanced Decentralized Chat System
 
-  overview: >
-    Block-Talk is a decentralized messaging system designed to provide secure,
-    scalable, and privacy-preserving communication.
+Block-Talk is a decentralized messaging system designed to provide secure, scalable, and privacy-preserving communication. It uses blockchain architecture to implement mutual-consent connections, end-to-end encryption, and decentralized media storage.
 
-  my_contributions:
-    - Collaborated with the team on system architecture
-    - Developed modules for message handling
-    - Documented features and shared code
+---
 
-  features:
-    - Mutual-consent request-response model
-    - AES-256-GCM encryption
-    - IPFS decentralized storage
+## Project Type
+**Team Research Project**
 
-  technologies_used:
-    blockchain_smart_contracts: "Solidity"
-    backend_server: "Node.js, Express.js"
-    frontend_client: "HTML, CSS, JavaScript"
+## GitHub Repository
+🔗 https://github.com/CYBER-STARK/CryptoComm
+
+---
+
+## Overview
+
+Block-Talk enables private communication by eliminating centralized servers. The system ensures that only mutually consenting users can communicate, while messages and media remain encrypted and tamper-proof.
+
+---
+
+## My Contributions
+
+- Collaborated with the team on system architecture design  
+- Developed modules for message handling and request-response logic  
+- Documented features and shared code with team members for integration  
+
+---
+
+## Key Features
+
+- Mutual-consent request-response model for secure connections  
+- Client-side end-to-end encryption using AES-256-GCM  
+- Decentralized media storage using IPFS  
+
+---
+
+## Technologies Used
+
+| Component | Technology |
+|---------|------------|
+| Smart Contracts | Solidity |
+| Backend Server | Node.js, Express.js |
+| Frontend Client | HTML, CSS, JavaScript |
+| Storage | IPFS |
+| Encryption | AES-256-GCM |
+
+---
+
+## Getting Started
+
+Try running the following commands:
+
+```bash
+npx hardhat help
+npx hardhat test
+REPORT_GAS=true npx hardhat test
+npx hardhat node
+npx hardhat ignition deploy ./ignition/modules/Lock.js
